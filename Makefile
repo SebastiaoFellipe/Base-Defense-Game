@@ -1,4 +1,6 @@
-FLAGS = -Wall -pedantic -O0 -g -Iinclude
+FLAGS = -Wall -pedantic -O0 -g -Iinclude -I/usr/local/include
+
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -12,7 +14,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	@mkdir -p $(BUILD_DIR)
-	g++ $(FLAGS) $(OBJS) -o $(TARGET)
+	g++ $(FLAGS) $(OBJS) $(LIBS) -o $(TARGET)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	g++ $(FLAGS) -c $< -o $@
