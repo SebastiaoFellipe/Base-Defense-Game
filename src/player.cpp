@@ -3,7 +3,6 @@
 #include <iostream>
 
 Player::Player():health(100),ammunition(50),position(600.0f,300.0f),speed(200){ 
-    sprite.setPosition(position);
     sprite.setOrigin(50.0f,50.0f);
     sprite.setScale(0.6f, 0.6f);
 }
@@ -29,6 +28,14 @@ void Player::updatePosition(float deltaTime) {
     sprite.move(direction * (speed * deltaTime));
 }
 
+sf::Vector2f Player::getPosition(){
+    return sprite.getPosition();
+}
+
+void Player::setPositionCenter(sf::RenderWindow& window){
+    sprite.setPosition(window.getSize().x/2,window.getSize().y/2);
+}
+
 void Player::draw(sf::RenderWindow& window) {
     window.draw(sprite);
 }
@@ -39,9 +46,9 @@ void Player::setSpriteTexture(sf::Texture& texture){
 
 void Player::rotateTowardsMouse(sf::RenderWindow& window) {
     const float PI = 3.14;
-    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    sf::Vector2f worldMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     sf::Vector2f playerPos = sprite.getPosition();
-    sf::Vector2f direction = sf::Vector2f(mousePos.x, mousePos.y) - playerPos;
+    sf::Vector2f direction = worldMousePos - playerPos;
     float angle = (std::atan2(direction.y, direction.x) * 180 / PI)-90.0f;
     sprite.setRotation(angle);
 }

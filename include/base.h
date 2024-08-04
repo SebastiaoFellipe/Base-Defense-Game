@@ -12,6 +12,7 @@ private:
 public:
     Base();
     void draw(sf::RenderWindow& window);
+    void setPositionCenter(sf::RenderWindow& window);
     // void takeDamage(int damage);
     // void regenerate();
 };

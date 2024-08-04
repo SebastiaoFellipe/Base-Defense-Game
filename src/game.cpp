@@ -2,8 +2,12 @@
 #include "player.h"
 #include <iostream>
 
-Game::Game():window(sf::VideoMode(1200, 600), "Base Defense Game") {
-    window.setVerticalSyncEnabled(true);
+Game::Game() {
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    // calcula a largura e altura da janela de modo que tenha 90% da largura do monitor e mantenha a proporção 1:2
+    float width = desktop.width * 0.9f;
+    float height = width / 2.0f;
+    window.create(sf::VideoMode(width, height), "Base Defense Game", sf::Style::Titlebar | sf::Style::Close);
     initialize();
 }
 
@@ -18,6 +22,8 @@ void Game::initialize() {
         std::exit(1);
     }
     player.setSpriteTexture(texture);
+    player.setPositionCenter(window);
+    base.setPositionCenter(window);
 }
 
 // função para processar os eventos na janela do jogo
@@ -55,8 +61,10 @@ void Game::update(float deltaTime) {
 
 // função para renderizar a janela atual do jogo
 void Game::render() {
-    sf::Color customColor(221, 221, 221); 
-    window.clear(customColor);
+    window.clear(sf::Color(221,221,221));
+
+    // window.setView(view);
+    // view.setCenter(player.getPosition());
 
     base.draw(window);
     player.draw(window);

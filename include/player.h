@@ -16,6 +16,8 @@ public:
     Player();
     void draw(sf::RenderWindow& window);
     void updatePosition(float deltaTime);
+    sf::Vector2f getPosition();
+    void setPositionCenter(sf::RenderWindow& window);
     void setSpriteTexture(sf::Texture& texture);
     void rotateTowardsMouse(sf::RenderWindow& window);
     // void shoot();
