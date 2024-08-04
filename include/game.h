@@ -5,6 +5,7 @@
 #include <vector>
 #include "base.h"
 #include "player.h"
+#include "bullet.h"
 
 class Game {
 private:

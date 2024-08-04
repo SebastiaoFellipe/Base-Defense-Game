@@ -9,7 +9,7 @@ private:
     int ammunition;
     sf::Vector2f position;
     int speed;
-    sf::Sprite sprite;
+    sf::Sprite body;
     sf::Texture texture;
 
 public:
@@ -18,11 +18,12 @@ public:
     void updatePosition(float deltaTime);
     sf::Vector2f getPosition();
     void setPositionCenter(sf::RenderWindow& window);
-    void setSpriteTexture(sf::Texture& texture);
+    void setBodyTexture(sf::Texture& texture);
     void rotateTowardsMouse(sf::RenderWindow& window);
+    void checkWallCollision(float deltaTime, const sf::Vector2u& windowSize);
     // void shoot();
     // void takeDamage(int damage);
-    // void update();
+    
 };
 
 #endif // PLAYER_H

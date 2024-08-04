@@ -21,7 +21,7 @@ void Game::initialize() {
         std::cerr << "Erro ao carregar a textura do player." << std::endl;
         std::exit(1);
     }
-    player.setSpriteTexture(texture);
+    player.setBodyTexture(texture);
     player.setPositionCenter(window);
     base.setPositionCenter(window);
 }
@@ -57,14 +57,12 @@ void Game::processEvents() {
 void Game::update(float deltaTime) {
     player.updatePosition(deltaTime);
     player.rotateTowardsMouse(window);
+    player.checkWallCollision(deltaTime, window.getSize());
 }
 
 // função para renderizar a janela atual do jogo
 void Game::render() {
     window.clear(sf::Color(221,221,221));
-
-    // window.setView(view);
-    // view.setCenter(player.getPosition());
 
     base.draw(window);
     player.draw(window);
