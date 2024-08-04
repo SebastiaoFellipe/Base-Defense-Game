@@ -1,60 +1,78 @@
 #include "game.h"
+#include "player.h"
 #include <iostream>
 
-Game::Game():Window(sf::VideoMode(1200, 600), "Base Defense Game") {
+Game::Game():window(sf::VideoMode(1200, 600), "Base Defense Game") {
+    window.setVerticalSyncEnabled(true);
     initialize();
 }
 
+// função para carregar fontes, imagens e audios do jogo
 void Game::initialize() {
-    if (!Font.loadFromFile("assets/fonts/Minecraftia-Regular.ttf")) {
-        std::cerr << "Erro ao carregar a fonte!" << std::endl;
-        std::exit(1);  // Encerrar o programa se a fonte não puder ser carregada
+    if (!font.loadFromFile("assets/fonts/Minecraftia-Regular.ttf")) {
+        std::cerr << "Erro ao carregar a fonte." << std::endl;
+        std::exit(1);
     }
-
-    Text.setFont(Font);
-    Text.setString("Hello, World!");
-    Text.setCharacterSize(24);
-    Text.setFillColor(sf::Color::White);
-    Text.setPosition(100, 100);
+    if (!texture.loadFromFile("assets/img/player.png")) {
+        std::cerr << "Erro ao carregar a textura do player." << std::endl;
+        std::exit(1);
+    }
+    player.setSpriteTexture(texture);
 }
 
 // função para processar os eventos na janela do jogo
 void Game::processEvents() {
     sf::Event event;
-    while (Window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
-            Window.close();
-        }
-        if (event.type == sf::Event::KeyPressed) {
-            getKeyboardEvent(event);
-        }
-        if (event.type == sf::Event::MouseButtonPressed) {
+    while (window.pollEvent(event)) {
+        switch (event.type){
+        case sf::Event::Closed:
+            window.close();
+            break;
+        case sf::Event::KeyPressed:
+            if (event.key.code == sf::Keyboard::Escape){
+                window.close();
+            }
+            if (event.key.code == sf::Keyboard::P){
+                // pausar
+            }
+            break;
+        case sf::Event::MouseButtonPressed:
             if (event.mouseButton.button == sf::Mouse::Left) {
                 getMouseClickPosition();
             }
+            break;
+        default:
+            break;
         }
     }
 }
 
 // função para atualizar a janela do jogo
-void Game::update() {
-    // Atualizar o estado do jogo, se necessário
+void Game::update(float deltaTime) {
+    player.updatePosition(deltaTime);
+    player.rotateTowardsMouse(window);
 }
 
-// função para renderizar a janela do jogo
+// função para renderizar a janela atual do jogo
 void Game::render() {
     sf::Color customColor(221, 221, 221); 
-    Window.clear(customColor);
-    Window.draw(Text);
-    Window.display();
+    window.clear(customColor);
+
+    base.draw(window);
+    player.draw(window);
+
+    window.display();
 }
 
 // função para rodar o jogo
 void Game::run() {
     std::cout << "Iniciando Base Defense Game!" << std::endl;
-    while (Window.isOpen()) {
+    sf::Clock clock;
+    while (window.isOpen()) {
+        sf::Time deltaTime = clock.restart();
+        float deltaTimeSeconds = deltaTime.asSeconds();
         processEvents();
-        update();
+        update(deltaTimeSeconds);
         render();
     }
     std::cout << "Jogo encerrado." << std::endl;
@@ -62,32 +80,6 @@ void Game::run() {
 
 // função para pegar posição do mouse
 void Game::getMouseClickPosition() {
-    sf::Vector2i mousePosition = sf::Mouse::getPosition(Window);
+    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
     std::cout << "Mouse clicado na posição (" << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
-}
-
-// função para verificar qual tecla foi pressionada
-void Game::getKeyboardEvent(const sf::Event& event) {
-    switch (event.key.code) {
-        case sf::Keyboard::Escape:
-            Window.close();
-            break;
-        case sf::Keyboard::W:
-            std::cout << "Letra W" << std::endl;
-            break;
-        case sf::Keyboard::A:
-            std::cout << "Letra A" << std::endl;
-            break;
-        case sf::Keyboard::S:
-            std::cout << "Letra S" << std::endl;
-            break;
-        case sf::Keyboard::D:
-            std::cout << "Letra D" << std::endl;
-            break;
-        case sf::Keyboard::P:
-            std::cout << "Letra P" << std::endl;
-            break;
-        default:
-            break;
-    }
 }
