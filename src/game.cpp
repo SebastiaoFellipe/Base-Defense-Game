@@ -1,5 +1,6 @@
 #include "game.h"
 #include "player.h"
+#include "bullet.h"
 #include <iostream>
 
 Game::Game() {
@@ -44,7 +45,9 @@ void Game::processEvents() {
             break;
         case sf::Event::MouseButtonPressed:
             if (event.mouseButton.button == sf::Mouse::Left) {
-                getMouseClickPosition();
+                sf::Vector2f playerPos = player.getPosition();
+                sf::Vector2f mousePos = getMouseClickPosition();
+                bullets.push_back(new Bullet(playerPos, mousePos)); // Adiciona nova bala
             }
             break;
         default:
@@ -58,6 +61,16 @@ void Game::update(float deltaTime) {
     player.updatePosition(deltaTime);
     player.rotateTowardsMouse(window);
     player.checkWallCollision(deltaTime, window.getSize());
+
+    for (auto bulletIterator = bullets.begin(); bulletIterator != bullets.end();) {
+        (*bulletIterator)->update(deltaTime);
+        if ((*bulletIterator)->checkBulletDistanceLimit()) {
+            delete *bulletIterator;
+            bulletIterator = bullets.erase(bulletIterator);
+        } else {
+            bulletIterator++;
+        }
+    }
 }
 
 // função para renderizar a janela atual do jogo
@@ -65,6 +78,9 @@ void Game::render() {
     window.clear(sf::Color(221,221,221));
 
     base.draw(window);
+    for (Bullet* bullet : bullets) {
+        bullet->draw(window);
+    }
     player.draw(window);
 
     window.display();
@@ -85,7 +101,7 @@ void Game::run() {
 }
 
 // função para pegar posição do mouse
-void Game::getMouseClickPosition() {
+sf::Vector2f Game::getMouseClickPosition() {
     sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-    std::cout << "Mouse clicado na posição (" << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
+    return sf::Vector2f(mousePosition);
 }

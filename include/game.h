@@ -17,14 +17,14 @@ private:
     Base base;
     Player player;
     // std::vector<Enemy> enemies;
-    // std::vector<Bullet> bullets;
+    std::vector<Bullet*> bullets;
     // Interface interface;
 
     void processEvents();
     void update(float deltaTime);
     void render();
     void initialize();
-    void getMouseClickPosition();
+    sf::Vector2f getMouseClickPosition();
 
 public:
     Game();
