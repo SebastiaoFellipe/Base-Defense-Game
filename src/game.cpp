@@ -8,7 +8,7 @@ Game::Game() {
     // calcula a largura e altura da janela de modo que tenha 90% da largura do monitor e mantenha a proporção 1:2
     float width = desktop.width * 0.9f;
     float height = width / 2.0f;
-    window.create(sf::VideoMode(width, height), "Base Defense Game", sf::Style::Titlebar | sf::Style::Close);
+    window.create(sf::VideoMode(width, height), "Base Defense Game");
     initialize();
 }
 
@@ -25,6 +25,13 @@ void Game::initialize() {
     player.setBodyTexture(texture);
     player.setPositionCenter(window);
     base.setPositionCenter(window);
+    text.setFont(font);
+    text.setFillColor(sf::Color::Black);
+    text.setString("PAUSE");
+    text.setCharacterSize(40);
+    text.setStyle(sf::Text::Bold);
+    text.setOrigin(text.getGlobalBounds().width/2,0.0f);
+    text.setPosition((window.getSize().x/2.0f), 100.0f);
 }
 
 // função para processar os eventos na janela do jogo
@@ -33,18 +40,18 @@ void Game::processEvents() {
     while (window.pollEvent(event)) {
         switch (event.type){
         case sf::Event::Closed:
-            window.close();
+            closeGame();
             break;
         case sf::Event::KeyPressed:
             if (event.key.code == sf::Keyboard::Escape){
-                window.close();
+                closeGame();
             }
             if (event.key.code == sf::Keyboard::P){
-                // pausar
+                pause();
             }
             break;
         case sf::Event::MouseButtonPressed:
-            if (event.mouseButton.button == sf::Mouse::Left) {
+            if (!onPause && event.mouseButton.button == sf::Mouse::Left) {
                 sf::Vector2f playerPos = player.getPosition();
                 sf::Vector2f mousePos = getMouseClickPosition();
                 bullets.push_back(new Bullet(playerPos, mousePos)); // Adiciona nova bala
@@ -63,7 +70,9 @@ void Game::update(float deltaTime) {
     player.checkWallCollision(deltaTime, window.getSize());
 
     for (auto bulletIterator = bullets.begin(); bulletIterator != bullets.end();) {
-        (*bulletIterator)->update(deltaTime);
+        if (!onPause) {
+            (*bulletIterator)->update(deltaTime);
+        }
         if ((*bulletIterator)->checkBulletDistanceLimit()) {
             delete *bulletIterator;
             bulletIterator = bullets.erase(bulletIterator);
@@ -93,9 +102,11 @@ void Game::run() {
     while (window.isOpen()) {
         sf::Time deltaTime = clock.restart();
         float deltaTimeSeconds = deltaTime.asSeconds();
+        if (!onPause){
+            update(deltaTimeSeconds);
+            render();
+        }
         processEvents();
-        update(deltaTimeSeconds);
-        render();
     }
     std::cout << "Jogo encerrado." << std::endl;
 }
@@ -104,4 +115,24 @@ void Game::run() {
 sf::Vector2f Game::getMouseClickPosition() {
     sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
     return sf::Vector2f(mousePosition);
+}
+
+void Game::closeGame(){
+    for (auto bullet : bullets) {
+        delete bullet;
+    }
+    bullets.clear();
+    window.close();
+}
+
+void Game::pause(){
+    if (onPause){
+        window.clear(sf::Color(221,221,221));
+        onPause = false;
+    } else {
+        window.draw(text);
+        window.display();
+        onPause = true; 
+    }
+    std::cout << "pause: " << onPause << std::endl;
 }

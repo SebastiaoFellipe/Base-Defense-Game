@@ -12,7 +12,8 @@ private:
     sf::RenderWindow window;
     sf::Font font;
     sf::Texture texture;
-    sf::View view;
+    sf::Text text;
+    bool onPause = false;
 
     Base base;
     Player player;
@@ -25,6 +26,8 @@ private:
     void render();
     void initialize();
     sf::Vector2f getMouseClickPosition();
+    void closeGame();
+    void pause();
 
 public:
     Game();
