@@ -1,6 +1,6 @@
 FLAGS = -Wall -pedantic -O0 -g -Iinclude -I/usr/local/include
 
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 SRC_DIR = src
 BUILD_DIR = build

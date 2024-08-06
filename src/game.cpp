@@ -12,19 +12,12 @@ Game::Game() {
     initialize();
 }
 
-// função para carregar fontes, imagens e audios do jogo
+// função para carregar os elementos, fontes, imagens e audios do jogo
 void Game::initialize() {
     if (!font.loadFromFile("assets/fonts/Minecraftia-Regular.ttf")) {
         std::cerr << "Erro ao carregar a fonte." << std::endl;
         std::exit(1);
     }
-    if (!texture.loadFromFile("assets/img/player.png")) {
-        std::cerr << "Erro ao carregar a textura do player." << std::endl;
-        std::exit(1);
-    }
-    player.setBodyTexture(texture);
-    player.setPositionCenter(window);
-    base.setPositionCenter(window);
     text.setFont(font);
     text.setFillColor(sf::Color::Black);
     text.setString("PAUSE");
@@ -32,6 +25,23 @@ void Game::initialize() {
     text.setStyle(sf::Text::Bold);
     text.setOrigin(text.getGlobalBounds().width/2,0.0f);
     text.setPosition((window.getSize().x/2.0f), 100.0f);
+
+    if (!texture.loadFromFile("assets/img/player.png")) {
+        std::cerr << "Erro ao carregar a textura do player." << std::endl;
+        std::exit(1);
+    }
+    player.setBodyTexture(texture);
+    player.setPositionCenter(window);
+
+    if (!buffer.loadFromFile("assets/sounds/gun_pistol_silenced.wav")) {
+        std::cerr << "Erro ao carregar o som do disparo. Efeito desabilitado." << std::endl;
+        playerShootingSoundLoaded = false;
+    } else {
+        playerShootingSound.setBuffer(buffer);
+    }
+    
+    base.setPositionCenter(window);
+    
 }
 
 // função para processar os eventos na janela do jogo
@@ -52,6 +62,7 @@ void Game::processEvents() {
             break;
         case sf::Event::MouseButtonPressed:
             if (!onPause && event.mouseButton.button == sf::Mouse::Left) {
+                player.shoot(playerShootingSound, playerShootingSoundLoaded);
                 sf::Vector2f playerPos = player.getPosition();
                 sf::Vector2f mousePos = getMouseClickPosition();
                 bullets.push_back(new Bullet(playerPos, mousePos)); // Adiciona nova bala
@@ -118,7 +129,7 @@ sf::Vector2f Game::getMouseClickPosition() {
 }
 
 void Game::closeGame(){
-    for (auto bullet : bullets) {
+    for (Bullet* bullet : bullets) {
         delete bullet;
     }
     bullets.clear();

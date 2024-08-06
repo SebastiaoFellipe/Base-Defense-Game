@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <SFML/Graphics.hpp>
+#include "SFML/Audio.hpp"
 
 class Player {
 private:
@@ -21,7 +22,7 @@ public:
     void setBodyTexture(sf::Texture& texture);
     void rotateTowardsMouse(sf::RenderWindow& window);
     void checkWallCollision(float deltaTime, const sf::Vector2u& windowSize);
-    // void shoot();
+    void shoot(sf::Sound& playerShootingSound, bool playerShootingSoundLoaded);
     // void takeDamage(int damage);
     
 };

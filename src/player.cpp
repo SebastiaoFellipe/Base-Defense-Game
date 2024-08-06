@@ -1,8 +1,9 @@
 #include "player.h"
 #include <cmath>
 #include <iostream>
+#include <SFML/Audio.hpp>
 
-Player::Player():health(100),ammunition(50),position(600.0f,300.0f),speed(400){ 
+Player::Player():health(100),ammunition(50),position(600.0f,300.0f),speed(200){ 
     body.setOrigin(50.0f,50.0f);
     body.setScale(0.6f, 0.6f);
 }
@@ -70,4 +71,11 @@ void Player::checkWallCollision(float deltaTime, const sf::Vector2u& windowSize)
         position.y = (windowSize.y-size.y/100.0f)-5;
     }
     body.setPosition(position);
+}
+
+void Player::shoot(sf::Sound& playerShootingSound, bool playerShootingSoundLoaded){
+    if (playerShootingSoundLoaded) {
+        playerShootingSound.setVolume(20.0f);
+        playerShootingSound.play();
+    }
 }

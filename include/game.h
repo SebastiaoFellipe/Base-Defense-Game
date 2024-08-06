@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include "base.h"
 #include "player.h"
@@ -13,6 +14,9 @@ private:
     sf::Font font;
     sf::Texture texture;
     sf::Text text;
+    sf::SoundBuffer buffer;
+    sf::Sound playerShootingSound;
+    bool playerShootingSoundLoaded = true;
     bool onPause = false;
 
     Base base;
