@@ -62,10 +62,7 @@ void Game::processEvents() {
             break;
         case sf::Event::MouseButtonPressed:
             if (!onPause && event.mouseButton.button == sf::Mouse::Left) {
-                player.shoot(playerShootingSound, playerShootingSoundLoaded);
-                sf::Vector2f playerPos = player.getPosition();
-                sf::Vector2f mousePos = getMouseClickPosition();
-                bullets.push_back(new Bullet(playerPos, mousePos)); // Adiciona nova bala
+                player.shoot(playerShootingSound, playerShootingSoundLoaded, getMouseClickPosition());
             }
             break;
         default:
@@ -76,21 +73,7 @@ void Game::processEvents() {
 
 // função para atualizar a janela do jogo
 void Game::update(float deltaTime) {
-    player.updatePosition(deltaTime);
-    player.rotateTowardsMouse(window);
-    player.checkWallCollision(deltaTime, window.getSize());
-
-    for (auto bulletIterator = bullets.begin(); bulletIterator != bullets.end();) {
-        if (!onPause) {
-            (*bulletIterator)->update(deltaTime);
-        }
-        if ((*bulletIterator)->checkBulletDistanceLimit()) {
-            delete *bulletIterator;
-            bulletIterator = bullets.erase(bulletIterator);
-        } else {
-            bulletIterator++;
-        }
-    }
+    player.update(deltaTime, onPause, window);
 }
 
 // função para renderizar a janela atual do jogo
@@ -98,9 +81,6 @@ void Game::render() {
     window.clear(sf::Color(221,221,221));
 
     base.draw(window);
-    for (Bullet* bullet : bullets) {
-        bullet->draw(window);
-    }
     player.draw(window);
 
     window.display();
@@ -129,10 +109,7 @@ sf::Vector2f Game::getMouseClickPosition() {
 }
 
 void Game::closeGame(){
-    for (Bullet* bullet : bullets) {
-        delete bullet;
-    }
-    bullets.clear();
+    player.deleteBullets();
     window.close();
 }
 

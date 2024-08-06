@@ -8,6 +8,23 @@ Player::Player():health(100),ammunition(50),position(600.0f,300.0f),speed(200){
     body.setScale(0.6f, 0.6f);
 }
 
+void Player::update(float deltaTime, bool onPause, sf::RenderWindow& window){
+    updatePosition(deltaTime);
+    rotateTowardsMouse(window);
+    checkWallCollision(deltaTime, window.getSize());
+    for (auto bulletIterator = bullets.begin(); bulletIterator != bullets.end();) {
+        if (!onPause) {
+            (*bulletIterator)->update(deltaTime);
+        }
+        if ((*bulletIterator)->checkBulletDistanceLimit()) {
+            delete *bulletIterator;
+            bulletIterator = bullets.erase(bulletIterator);
+        } else {
+            bulletIterator++;
+        }
+    }
+}
+
 void Player::updatePosition(float deltaTime) {
     sf::Vector2f direction(0.0f, 0.0f); 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
@@ -38,6 +55,9 @@ void Player::setPositionCenter(sf::RenderWindow& window){
 }
 
 void Player::draw(sf::RenderWindow& window) {
+    for (Bullet* bullet : bullets) {
+        bullet->draw(window);
+    }
     window.draw(body);
 }
 
@@ -73,9 +93,23 @@ void Player::checkWallCollision(float deltaTime, const sf::Vector2u& windowSize)
     body.setPosition(position);
 }
 
-void Player::shoot(sf::Sound& playerShootingSound, bool playerShootingSoundLoaded){
-    if (playerShootingSoundLoaded) {
-        playerShootingSound.setVolume(20.0f);
-        playerShootingSound.play();
+void Player::shoot(sf::Sound& playerShootingSound, bool playerShootingSoundLoaded, sf::Vector2f mousePos){
+    if (ammunition > 0) {
+        if (playerShootingSoundLoaded) {
+            playerShootingSound.setVolume(20.0f);
+            playerShootingSound.play();
+        }
+        sf::Vector2f playerPos = getPosition();
+        bullets.push_back(new Bullet(playerPos, mousePos));
+        ammunition--;
+    } else {
+        std::cerr << "Sem munição!" << std::endl;
     }
+}
+
+void Player::deleteBullets(){
+    for (Bullet* bullet : bullets) {
+        delete bullet;
+    }
+    bullets.clear();
 }

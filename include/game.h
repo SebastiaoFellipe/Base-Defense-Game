@@ -22,7 +22,6 @@ private:
     Base base;
     Player player;
     // std::vector<Enemy> enemies;
-    std::vector<Bullet*> bullets;
     // Interface interface;
 
     void processEvents();
