@@ -1,47 +1,44 @@
 #include "game.h"
 #include "player.h"
 #include "bullet.h"
+#include "interface.h"
 #include <iostream>
 
 Game::Game() {
+    // verificar se tera conflito com a textura de fundo do jogo futuramente
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
     // calcula a largura e altura da janela de modo que tenha 90% da largura do monitor e mantenha a proporção 1:2
     float width = desktop.width * 0.9f;
     float height = width / 2.0f;
     window.create(sf::VideoMode(width, height), "Base Defense Game");
+    interface = new Interface(window);
     initialize();
 }
 
-// função para carregar os elementos, fontes, imagens e audios do jogo
+// função para carregar os elementos, imagens e audios do jogo
 void Game::initialize() {
-    if (!font.loadFromFile("assets/fonts/Minecraftia-Regular.ttf")) {
-        std::cerr << "Erro ao carregar a fonte." << std::endl;
-        std::exit(1);
-    }
-    text.setFont(font);
-    text.setFillColor(sf::Color::Black);
-    text.setString("PAUSE");
-    text.setCharacterSize(40);
-    text.setStyle(sf::Text::Bold);
-    text.setOrigin(text.getGlobalBounds().width/2,0.0f);
-    text.setPosition((window.getSize().x/2.0f), 100.0f);
-
-    if (!texture.loadFromFile("assets/img/player.png")) {
+    if (!texture.loadFromFile("assets/textures/player.png")) {
         std::cerr << "Erro ao carregar a textura do player." << std::endl;
         std::exit(1);
     }
     player.setBodyTexture(texture);
     player.setPositionCenter(window);
-
-    if (!buffer.loadFromFile("assets/sounds/gun_pistol_silenced.wav")) {
+    base.setPositionCenter(window);
+    if (!playerShootingBuffer.loadFromFile("assets/sounds/gun_pistol_silenced.wav")) {
         std::cerr << "Erro ao carregar o som do disparo. Efeito desabilitado." << std::endl;
         playerShootingSoundLoaded = false;
     } else {
-        playerShootingSound.setBuffer(buffer);
+        playerShootingSound.setBuffer(playerShootingBuffer);
+        playerShootingSound.setVolume(20.0f);
     }
-    
-    base.setPositionCenter(window);
-    
+    if (!backgroundMusic.openFromFile("assets/sounds/8-Bit-Hideout!-Dark-Chiptune-Game-Music-By-HeatleyBros.wav")) {
+        std::cerr << "Erro ao carregar a música de fundo." << std::endl;
+        backgroundMusicLoaded = false;
+    } else {
+        backgroundMusic.setLoop(true);
+        backgroundMusic.setVolume(20.0f);
+        backgroundMusic.play();
+    }
 }
 
 // função para processar os eventos na janela do jogo
@@ -74,6 +71,7 @@ void Game::processEvents() {
 // função para atualizar a janela do jogo
 void Game::update(float deltaTime) {
     player.update(deltaTime, onPause, window);
+    interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills());
 }
 
 // função para renderizar a janela atual do jogo
@@ -82,6 +80,7 @@ void Game::render() {
 
     base.draw(window);
     player.draw(window);
+    interface->draw(window);
 
     window.display();
 }
@@ -90,15 +89,21 @@ void Game::render() {
 void Game::run() {
     std::cout << "Iniciando Base Defense Game!" << std::endl;
     sf::Clock clock;
+    
     while (window.isOpen()) {
         sf::Time deltaTime = clock.restart();
         float deltaTimeSeconds = deltaTime.asSeconds();
+        processEvents();
         if (!onPause){
             update(deltaTimeSeconds);
             render();
         }
-        processEvents();
+        
     }
+    // sf::Time parada = clock.getElapsedTime();
+    // float seconds = parada.asSeconds();
+    // std::cout << seconds << std::endl;
+    
     std::cout << "Jogo encerrado." << std::endl;
 }
 
@@ -115,12 +120,12 @@ void Game::closeGame(){
 
 void Game::pause(){
     if (onPause){
+        backgroundMusic.play();
         window.clear(sf::Color(221,221,221));
         onPause = false;
     } else {
-        window.draw(text);
-        window.display();
+        backgroundMusic.pause();
+        interface->drawPauseScreen(window);
         onPause = true; 
     }
-    std::cout << "pause: " << onPause << std::endl;
 }

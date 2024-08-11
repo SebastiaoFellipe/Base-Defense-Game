@@ -7,6 +7,7 @@
 #include "base.h"
 #include "player.h"
 #include "bullet.h"
+#include "interface.h"
 
 class Game {
 private:
@@ -14,15 +15,17 @@ private:
     sf::Font font;
     sf::Texture texture;
     sf::Text text;
-    sf::SoundBuffer buffer;
+    sf::SoundBuffer playerShootingBuffer;
     sf::Sound playerShootingSound;
     bool playerShootingSoundLoaded = true;
+    sf::Music backgroundMusic;
+    bool backgroundMusicLoaded = true;
     bool onPause = false;
 
     Base base;
     Player player;
     // std::vector<Enemy> enemies;
-    // Interface interface;
+    Interface* interface;
 
     void processEvents();
     void update(float deltaTime);
