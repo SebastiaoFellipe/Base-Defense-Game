@@ -14,6 +14,7 @@ private:
     sf::Sprite body;
     sf::Texture texture;
     std::vector<Bullet*> bullets;
+    int kills;
 
 public:
     Player();
@@ -27,8 +28,9 @@ public:
     void checkWallCollision(float deltaTime, const sf::Vector2u& windowSize);
     void shoot(sf::Sound& playerShootingSound, bool playerShootingSoundLoaded, sf::Vector2f mousePos);
     void deleteBullets();
-    // void takeDamage(int damage);
-    
+    int getHealth();
+    int getAmmunition();
+    int getKills();
 };
 
 #endif // PLAYER_H

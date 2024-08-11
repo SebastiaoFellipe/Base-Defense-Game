@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SFML/Audio.hpp>
 
-Player::Player():health(100),ammunition(50),position(600.0f,300.0f),speed(200){ 
+Player::Player():health(100),ammunition(50),position(600.0f,300.0f),speed(200),kills(0){ 
     body.setOrigin(50.0f,50.0f);
     body.setScale(0.6f, 0.6f);
 }
@@ -39,9 +39,9 @@ void Player::updatePosition(float deltaTime) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         direction.x += 1.0f;
     }
-    if (direction.x != 0.0f || direction.y != 0.0f) {
-        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-        direction /= length;
+    float length = direction.x * direction.x + direction.y * direction.y;
+    if (length != 0.0f) {
+        direction /= std::sqrt(length);
     }
     body.move(direction * (speed * deltaTime));
 }
@@ -96,14 +96,11 @@ void Player::checkWallCollision(float deltaTime, const sf::Vector2u& windowSize)
 void Player::shoot(sf::Sound& playerShootingSound, bool playerShootingSoundLoaded, sf::Vector2f mousePos){
     if (ammunition > 0) {
         if (playerShootingSoundLoaded) {
-            playerShootingSound.setVolume(20.0f);
             playerShootingSound.play();
         }
         sf::Vector2f playerPos = getPosition();
         bullets.push_back(new Bullet(playerPos, mousePos));
         ammunition--;
-    } else {
-        std::cerr << "Sem munição!" << std::endl;
     }
 }
 
@@ -112,4 +109,16 @@ void Player::deleteBullets(){
         delete bullet;
     }
     bullets.clear();
+}
+
+int Player::getHealth(){
+    return health;
+}
+
+int Player::getAmmunition(){
+    return ammunition;
+}
+
+int Player::getKills(){
+    return kills;
 }
