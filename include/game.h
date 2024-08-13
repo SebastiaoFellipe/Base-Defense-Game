@@ -8,6 +8,7 @@
 #include "player.h"
 #include "bullet.h"
 #include "interface.h"
+#include "enemy.h"
 
 class Game {
 private:
@@ -22,10 +23,11 @@ private:
     bool backgroundMusicLoaded = true;
     bool onPause = false;
     sf::Clock mainClock;
+    float lastEnemySpawnTime = 0.0f;
 
     Base base;
     Player player;
-    // std::vector<Enemy> enemies;
+    std::vector<Enemy*> enemies;
     Interface* interface;
 
     void processEvents();

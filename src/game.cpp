@@ -72,6 +72,13 @@ void Game::processEvents() {
 // função para atualizar a janela do jogo
 void Game::update(float deltaTime, int elapsedSeconds) {
     player.update(deltaTime, onPause, window);
+    if (elapsedSeconds-lastEnemySpawnTime >= 10.0f) {
+        enemies.push_back(new Enemy());
+        lastEnemySpawnTime = elapsedSeconds;
+    }
+    for (Enemy* enemy : enemies){
+        enemy->updatePosition(deltaTime, player.getPosition());
+    }
     interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
 }
 
@@ -82,6 +89,9 @@ void Game::render() {
     base.draw(window);
     player.draw(window);
     interface->draw(window);
+    for (Enemy* enemy : enemies){
+        enemy->draw(window);
+    }
 
     window.display();
 }
@@ -102,7 +112,7 @@ void Game::run() {
                 update(deltaTimeSeconds, elapsedSeconds);
                 render();
             } else {
-                std::cout << "Acabou o tempo." << elapsedSeconds << std::endl;
+                std::cout << "Acabou o tempo." << std::endl;
                 break;
             }
         }
