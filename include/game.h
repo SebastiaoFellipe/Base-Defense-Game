@@ -21,6 +21,7 @@ private:
     sf::Music backgroundMusic;
     bool backgroundMusicLoaded = true;
     bool onPause = false;
+    sf::Clock mainClock;
 
     Base base;
     Player player;
@@ -28,7 +29,7 @@ private:
     Interface* interface;
 
     void processEvents();
-    void update(float deltaTime);
+    void update(float deltaTime, int elapsedSeconds);
     void render();
     void initialize();
     sf::Vector2f getMouseClickPosition();

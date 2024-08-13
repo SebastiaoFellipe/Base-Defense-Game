@@ -3,19 +3,20 @@
 #include "bullet.h"
 #include "interface.h"
 #include <iostream>
+#include <cmath>
 
 Game::Game() {
-    // verificar se tera conflito com a textura de fundo do jogo futuramente
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-    // calcula a largura e altura da janela de modo que tenha 90% da largura do monitor e mantenha a proporção 1:2
+    // calcula a largura e altura da janela de modo que tenha 90% da largura do monitor sendo o máximo 1600:900
     float width = desktop.width * 0.9f;
-    float height = width / 2.0f;
+    width = width>1600 ? 1600 : width;
+    float height = (width / 2.0f) + 100;
     window.create(sf::VideoMode(width, height), "Base Defense Game");
     interface = new Interface(window);
     initialize();
 }
 
-// função para carregar os elementos, imagens e audios do jogo
+// função para carregar e posicionar os elementos, imagens e audios do jogo
 void Game::initialize() {
     if (!texture.loadFromFile("assets/textures/player.png")) {
         std::cerr << "Erro ao carregar a textura do player." << std::endl;
@@ -69,9 +70,9 @@ void Game::processEvents() {
 }
 
 // função para atualizar a janela do jogo
-void Game::update(float deltaTime) {
+void Game::update(float deltaTime, int elapsedSeconds) {
     player.update(deltaTime, onPause, window);
-    interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills());
+    interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
 }
 
 // função para renderizar a janela atual do jogo
@@ -88,22 +89,25 @@ void Game::render() {
 // função para rodar o jogo
 void Game::run() {
     std::cout << "Iniciando Base Defense Game!" << std::endl;
-    sf::Clock clock;
+    sf::Clock deltaTimeClock;
     
     while (window.isOpen()) {
-        sf::Time deltaTime = clock.restart();
+        sf::Time deltaTime = deltaTimeClock.restart();
         float deltaTimeSeconds = deltaTime.asSeconds();
+        int elapsedSeconds = static_cast<int>(mainClock.getElapsedTime().asSeconds());
+        int totalTimeInSeconds = 80;
         processEvents();
-        if (!onPause){
-            update(deltaTimeSeconds);
-            render();
+        if (!onPause) {
+            if (elapsedSeconds < totalTimeInSeconds) {
+                update(deltaTimeSeconds, elapsedSeconds);
+                render();
+            } else {
+                std::cout << "Acabou o tempo." << elapsedSeconds << std::endl;
+                break;
+            }
         }
-        
     }
-    // sf::Time parada = clock.getElapsedTime();
-    // float seconds = parada.asSeconds();
-    // std::cout << seconds << std::endl;
-    
+
     std::cout << "Jogo encerrado." << std::endl;
 }
 

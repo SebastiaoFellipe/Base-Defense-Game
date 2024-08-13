@@ -31,20 +31,33 @@ Interface::Interface(sf::RenderWindow& window) {
     killsText.setPosition(sideMargin,fontSize*4.6f);
 
     pauseText.setFont(font);
+    pauseText.setCharacterSize(46);
     pauseText.setFillColor(sf::Color::Black);
     pauseText.setString("PAUSE");
-    pauseText.setCharacterSize(46);
     pauseText.setStyle(sf::Text::Bold);
     pauseText.setOrigin(pauseText.getGlobalBounds().width/2,0.0f);
     pauseText.setPosition((window.getSize().x/2.0f), 50.0f);
+
+    timerText.setFont(font);
+    timerText.setCharacterSize(fontSize);
+    timerText.setFillColor(sf::Color::Black);
+    timerText.setString("TEMPO: 01:20");
+    timerText.setOrigin(timerText.getGlobalBounds().width/2,0.0f);
+    timerText.setPosition((window.getSize().x/2.0f), 20.0f);
 }
 
-void Interface::update(int baseHealth, int playerHealth, int ammunition, int kills){
+void Interface::update(int baseHealth, int playerHealth, int ammunition, int kills, int elapsedSeconds){
     baseHealthText.setString("BASE: " + std::to_string(baseHealth));
     playerHealthText.setString("VIDA: " + std::to_string(playerHealth));
     ammunitionText.setString("MUNICAO: " + std::to_string(ammunition));
     killsText.setString("KILLS: " + std::to_string(kills));
-    // timerText.setString("Time: " + std::to_string(int(time)));
+
+    int seconds = elapsedSeconds < 20 ? 20 : 80;
+    int remainingSeconds = seconds - elapsedSeconds;
+    std::string minutePart = elapsedSeconds < 20 ? "01:" : "00:";
+    std::string secondPart = remainingSeconds < 10 ? "0" + std::to_string(remainingSeconds) : std::to_string(remainingSeconds);
+
+    timerText.setString("TEMPO: " + minutePart + secondPart);
 }
 
 void Interface::draw(sf::RenderWindow& window) {
@@ -52,7 +65,7 @@ void Interface::draw(sf::RenderWindow& window) {
     window.draw(playerHealthText);
     window.draw(ammunitionText);
     window.draw(killsText);
-    // window.draw(timerText);
+    window.draw(timerText);
 }
 
 void Interface::drawPauseScreen(sf::RenderWindow& window) {

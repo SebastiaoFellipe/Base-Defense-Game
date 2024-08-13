@@ -15,7 +15,7 @@ private:
     
 public:
     Interface(sf::RenderWindow& window);
-    void update(int baseHealth, int playerHealth, int ammunition, int kills); // falta adicionar o cronometro
+    void update(int baseHealth, int playerHealth, int ammunition, int kills, int elapsedSeconds);
     void draw(sf::RenderWindow& window);
     void drawPauseScreen(sf::RenderWindow& window);
 };
