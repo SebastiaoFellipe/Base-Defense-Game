@@ -52,9 +52,9 @@ void Interface::update(int baseHealth, int playerHealth, int ammunition, int kil
     ammunitionText.setString("MUNICAO: " + std::to_string(ammunition));
     killsText.setString("KILLS: " + std::to_string(kills));
 
-    int seconds = elapsedSeconds < 20 ? 20 : 80;
+    int seconds = elapsedSeconds < 21 ? 20 : 80;
     int remainingSeconds = seconds - elapsedSeconds;
-    std::string minutePart = elapsedSeconds < 20 ? "01:" : "00:";
+    std::string minutePart = elapsedSeconds < 21 ? "01:" : "00:";
     std::string secondPart = remainingSeconds < 10 ? "0" + std::to_string(remainingSeconds) : std::to_string(remainingSeconds);
 
     timerText.setString("TEMPO: " + minutePart + secondPart);

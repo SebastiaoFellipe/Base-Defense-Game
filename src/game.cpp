@@ -4,6 +4,7 @@
 #include "interface.h"
 #include <iostream>
 #include <cmath>
+#include <chrono>
 
 Game::Game() {
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
@@ -13,6 +14,7 @@ Game::Game() {
     float height = (width / 2.0f) + 100;
     window.create(sf::VideoMode(width, height), "Base Defense Game");
     interface = new Interface(window);
+    startTime = std::chrono::steady_clock::now();
     initialize();
 }
 
@@ -101,10 +103,12 @@ void Game::run() {
     while (window.isOpen()) {
         sf::Time deltaTime = deltaTimeClock.restart();
         float deltaTimeSeconds = deltaTime.asSeconds();
-        int elapsedSeconds = static_cast<int>(mainClock.getElapsedTime().asSeconds());
-        int totalTimeInSeconds = 80;
+        int totalTimeInSeconds = 81;
         processEvents();
         if (!onPause) {
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - startTime) - totalPausedTime;
+            elapsedSeconds = static_cast<int>(elapsed.count());
             if (elapsedSeconds < totalTimeInSeconds) {
                 update(deltaTimeSeconds, elapsedSeconds);
                 render();
@@ -136,10 +140,15 @@ void Game::closeGame(){
 
 void Game::pause(){
     if (onPause){
+        auto now = std::chrono::steady_clock::now();
+        totalPausedTime += std::chrono::duration_cast<std::chrono::seconds>(now - pauseStartTime);
+
         backgroundMusic.play();
         window.clear(sf::Color(221,221,221));
         onPause = false;
     } else {
+        pauseStartTime = std::chrono::steady_clock::now();
+
         backgroundMusic.pause();
         interface->drawPauseScreen(window);
         onPause = true; 

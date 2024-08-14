@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <vector>
+#include <chrono>
 #include "base.h"
 #include "player.h"
 #include "bullet.h"
@@ -22,7 +23,10 @@ private:
     sf::Music backgroundMusic;
     bool backgroundMusicLoaded = true;
     bool onPause = false;
-    sf::Clock mainClock;
+    int elapsedSeconds;
+    std::chrono::steady_clock::time_point startTime;
+    std::chrono::steady_clock::time_point pauseStartTime;
+    std::chrono::seconds totalPausedTime{0};
     float lastEnemySpawnTime = 0.0f;
 
     Base base;
