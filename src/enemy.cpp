@@ -4,8 +4,11 @@
 Enemy::Enemy() : speed(50) {
     body.setSize(sf::Vector2f(30.0f, 30.0f));
     body.setFillColor(sf::Color::Red);
-    body.setPosition(10.0f,10.0f);
     body.setOrigin(15.0f,15.0f);
+}
+
+void Enemy::update(float deltaTime, sf::Vector2f playerPosition){
+    updatePosition(deltaTime, playerPosition);
 }
 
 void Enemy::updatePosition(float deltaTime, sf::Vector2f playerPosition) {
@@ -19,4 +22,8 @@ void Enemy::updatePosition(float deltaTime, sf::Vector2f playerPosition) {
 
 void Enemy::draw(sf::RenderWindow& window) {
     window.draw(body);
+}
+
+void Enemy::setPosition(sf::Vector2f position){
+    body.setPosition(position);
 }

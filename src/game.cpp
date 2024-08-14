@@ -72,12 +72,9 @@ void Game::processEvents() {
 // função para atualizar a janela do jogo
 void Game::update(float deltaTime, int elapsedSeconds) {
     player.update(deltaTime, onPause, window);
-    if (elapsedSeconds-lastEnemySpawnTime >= 10.0f) {
-        enemies.push_back(new Enemy());
-        lastEnemySpawnTime = elapsedSeconds;
-    }
+    createEnemies(elapsedSeconds, 2, window);
     for (Enemy* enemy : enemies){
-        enemy->updatePosition(deltaTime, player.getPosition());
+        enemy->update(deltaTime, player.getPosition());
     }
     interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
 }
@@ -129,6 +126,11 @@ sf::Vector2f Game::getMouseClickPosition() {
 
 void Game::closeGame(){
     player.deleteBullets();
+    for (Enemy* enemy : enemies) {
+        delete enemy;
+    }
+    enemies.clear();
+    delete interface;
     window.close();
 }
 
@@ -141,5 +143,44 @@ void Game::pause(){
         backgroundMusic.pause();
         interface->drawPauseScreen(window);
         onPause = true; 
+    }
+}
+
+void Game::createEnemies(int elapsedSeconds, int interval, sf::RenderWindow& window){
+    if (enemies.empty()){  
+        enemies.push_back(new Enemy());
+    }
+    if (elapsedSeconds-lastEnemySpawnTime >= interval) {
+        enemies.push_back(new Enemy());
+        lastEnemySpawnTime = elapsedSeconds;
+        int side = rand()%4+1;
+        switch (side){
+            case 1: {
+                int positionX = rand() % window.getSize().x;
+                sf::Vector2f position(static_cast<float>(positionX), 0.0f);
+                enemies.back()->setPosition(position);
+                break;
+            }
+            case 2: {
+                int positionY = rand()%window.getSize().y;
+                sf::Vector2f position(static_cast<float>(window.getSize().x), positionY);
+                enemies.back()->setPosition(position);
+                break;
+            }
+            case 3: {
+                int positionX = rand()%window.getSize().x;
+                sf::Vector2f position(static_cast<float>(positionX), static_cast<float>(window.getSize().y));
+                enemies.back()->setPosition(position);
+                break;
+            }
+            case 4: {
+                int positionY = rand()%window.getSize().y;
+                sf::Vector2f position(0.0f, positionY);
+                enemies.back()->setPosition(position);
+                break;
+            }
+            default:
+                break;
+        }
     }
 }

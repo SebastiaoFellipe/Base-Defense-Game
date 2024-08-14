@@ -16,8 +16,10 @@ private:
 
 public:
     Enemy();
+    void update(float deltaTime, sf::Vector2f playerPosition);
     void draw(sf::RenderWindow& window);
     void updatePosition(float deltaTime, sf::Vector2f playerPosition);
+    void setPosition(sf::Vector2f position);
 
 };
 
