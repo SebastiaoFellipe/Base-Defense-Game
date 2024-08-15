@@ -7,8 +7,26 @@ Enemy::Enemy() : speed(50) {
     body.setOrigin(15.0f,15.0f);
 }
 
-void Enemy::update(float deltaTime, sf::Vector2f playerPosition){
+void Enemy::update(float deltaTime, int elapsedSeconds, bool onPause, sf::Sound& shootingSound, bool shootingSoundLoaded, sf::Vector2f playerPosition){
     updatePosition(deltaTime, playerPosition);
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    int interval = std::rand() % 3 + 4;
+    if (elapsedSeconds-lastBulletFired >= interval) {
+        lastBulletFired = elapsedSeconds;
+        shoot(shootingSound, shootingSoundLoaded, playerPosition);
+    }
+    for (auto bullet = bullets.begin(); bullet != bullets.end();) {
+        if (*bullet) {
+            (*bullet)->update(deltaTime);
+            if ((*bullet)->checkBulletDistanceLimit()) {
+                bullet = bullets.erase(bullet);
+            } else {
+                bullet++;
+            }
+        } else {
+            bullet = bullets.erase(bullet);
+        }
+    }
 }
 
 void Enemy::updatePosition(float deltaTime, sf::Vector2f playerPosition) {
@@ -21,9 +39,20 @@ void Enemy::updatePosition(float deltaTime, sf::Vector2f playerPosition) {
 }
 
 void Enemy::draw(sf::RenderWindow& window) {
+    for (auto bullet : bullets) {
+        bullet->draw(window);
+    }
     window.draw(body);
 }
 
 void Enemy::setPosition(sf::Vector2f position){
     body.setPosition(position);
+}
+
+void Enemy::shoot(sf::Sound& shootingSound, bool shootingSoundLoaded, sf::Vector2f playerPos){
+    if (shootingSoundLoaded) {
+        shootingSound.play();
+    }
+    sf::Vector2f enemyPos = body.getPosition();
+    bullets.push_back(std::make_shared<Bullet>(enemyPos, playerPos));
 }

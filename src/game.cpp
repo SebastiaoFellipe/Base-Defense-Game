@@ -74,9 +74,9 @@ void Game::processEvents() {
 // função para atualizar a janela do jogo
 void Game::update(float deltaTime, int elapsedSeconds) {
     player.update(deltaTime, onPause, window);
-    createEnemies(elapsedSeconds, 2, window);
-    for (Enemy* enemy : enemies){
-        enemy->update(deltaTime, player.getPosition());
+    createEnemies(elapsedSeconds, 5, window);
+    for (auto enemy : enemies){
+        enemy->update(deltaTime, elapsedSeconds, onPause, shootingSound, shootingSoundLoaded, player.getPosition());
     }
     interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
 }
