@@ -10,6 +10,7 @@
 #include "bullet.h"
 #include "interface.h"
 #include "enemy.h"
+#include <memory>
 
 class Game {
 private:
@@ -17,9 +18,9 @@ private:
     sf::Font font;
     sf::Texture texture;
     sf::Text text;
-    sf::SoundBuffer playerShootingBuffer;
-    sf::Sound playerShootingSound;
-    bool playerShootingSoundLoaded = true;
+    sf::SoundBuffer shootingBuffer;
+    sf::Sound shootingSound;
+    bool shootingSoundLoaded = true;
     sf::Music backgroundMusic;
     bool backgroundMusicLoaded = true;
     bool onPause = false;
@@ -27,12 +28,12 @@ private:
     std::chrono::steady_clock::time_point startTime;
     std::chrono::steady_clock::time_point pauseStartTime;
     std::chrono::seconds totalPausedTime{0};
-    float lastEnemySpawnTime = 0.0f;
+    int lastEnemySpawnTime = 0;
 
     Base base;
     Player player;
-    std::vector<Enemy*> enemies;
-    Interface* interface;
+    std::vector<std::shared_ptr<Enemy>> enemies;
+    std::unique_ptr<Interface> interface;
 
     void processEvents();
     void update(float deltaTime, int elapsedSeconds);

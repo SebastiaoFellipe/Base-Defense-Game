@@ -1,5 +1,6 @@
 #include "enemy.h"
 #include <cmath>
+#include <memory>
 
 Enemy::Enemy() : speed(50) {
     body.setSize(sf::Vector2f(30.0f, 30.0f));

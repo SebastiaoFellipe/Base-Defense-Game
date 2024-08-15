@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include <chrono>
+#include <memory>
 
 Game::Game() {
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
@@ -13,7 +14,7 @@ Game::Game() {
     width = width>1600 ? 1600 : width;
     float height = (width / 2.0f) + 100;
     window.create(sf::VideoMode(width, height), "Base Defense Game");
-    interface = new Interface(window);
+    interface = std::make_unique<Interface>(window);
     startTime = std::chrono::steady_clock::now();
     initialize();
 }
@@ -27,12 +28,12 @@ void Game::initialize() {
     player.setBodyTexture(texture);
     player.setPositionCenter(window);
     base.setPositionCenter(window);
-    if (!playerShootingBuffer.loadFromFile("assets/sounds/gun_pistol_silenced.wav")) {
+    if (!shootingBuffer.loadFromFile("assets/sounds/gun_pistol_silenced.wav")) {
         std::cerr << "Erro ao carregar o som do disparo. Efeito desabilitado." << std::endl;
-        playerShootingSoundLoaded = false;
+        shootingSoundLoaded = false;
     } else {
-        playerShootingSound.setBuffer(playerShootingBuffer);
-        playerShootingSound.setVolume(20.0f);
+        shootingSound.setBuffer(shootingBuffer);
+        shootingSound.setVolume(20.0f);
     }
     if (!backgroundMusic.openFromFile("assets/sounds/8-Bit-Hideout!-Dark-Chiptune-Game-Music-By-HeatleyBros.wav")) {
         std::cerr << "Erro ao carregar a música de fundo." << std::endl;
@@ -62,7 +63,7 @@ void Game::processEvents() {
             break;
         case sf::Event::MouseButtonPressed:
             if (!onPause && event.mouseButton.button == sf::Mouse::Left) {
-                player.shoot(playerShootingSound, playerShootingSoundLoaded, getMouseClickPosition());
+                player.shoot(shootingSound, shootingSoundLoaded, getMouseClickPosition());
             }
             break;
         default:
@@ -88,7 +89,7 @@ void Game::render() {
     base.draw(window);
     player.draw(window);
     interface->draw(window);
-    for (Enemy* enemy : enemies){
+    for (auto enemy : enemies){
         enemy->draw(window);
     }
 
@@ -129,12 +130,7 @@ sf::Vector2f Game::getMouseClickPosition() {
 }
 
 void Game::closeGame(){
-    player.deleteBullets();
-    for (Enemy* enemy : enemies) {
-        delete enemy;
-    }
     enemies.clear();
-    delete interface;
     window.close();
 }
 
@@ -157,11 +153,12 @@ void Game::pause(){
 
 void Game::createEnemies(int elapsedSeconds, int interval, sf::RenderWindow& window){
     if (enemies.empty()){  
-        enemies.push_back(new Enemy());
+        enemies.push_back(std::make_shared<Enemy>());
     }
     if (elapsedSeconds-lastEnemySpawnTime >= interval) {
-        enemies.push_back(new Enemy());
+        enemies.push_back(std::make_shared<Enemy>());
         lastEnemySpawnTime = elapsedSeconds;
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
         int side = rand()%4+1;
         switch (side){
             case 1: {

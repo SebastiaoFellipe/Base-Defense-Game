@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <SFML/Audio.hpp>
+#include <memory>
 
 Player::Player():health(100),ammunition(50),position(600.0f,300.0f),speed(200),kills(0){ 
     body.setOrigin(50.0f,50.0f);
@@ -12,15 +13,16 @@ void Player::update(float deltaTime, bool onPause, sf::RenderWindow& window){
     updatePosition(deltaTime);
     rotateTowardsMouse(window);
     checkWallCollision(deltaTime, window.getSize());
-    for (auto bulletIterator = bullets.begin(); bulletIterator != bullets.end();) {
-        if (!onPause) {
-            (*bulletIterator)->update(deltaTime);
-        }
-        if ((*bulletIterator)->checkBulletDistanceLimit()) {
-            delete *bulletIterator;
-            bulletIterator = bullets.erase(bulletIterator);
+    for (auto bullet = bullets.begin(); bullet != bullets.end();) {
+        if (*bullet) {
+            (*bullet)->update(deltaTime);
+            if ((*bullet)->checkBulletDistanceLimit()) {
+                bullet = bullets.erase(bullet); 
+            } else {
+                bullet++;
+            }
         } else {
-            bulletIterator++;
+            bullet = bullets.erase(bullet);
         }
     }
 }
@@ -55,7 +57,7 @@ void Player::setPositionCenter(sf::RenderWindow& window){
 }
 
 void Player::draw(sf::RenderWindow& window) {
-    for (Bullet* bullet : bullets) {
+    for (auto bullet : bullets) {
         bullet->draw(window);
     }
     window.draw(body);
@@ -93,22 +95,15 @@ void Player::checkWallCollision(float deltaTime, const sf::Vector2u& windowSize)
     body.setPosition(position);
 }
 
-void Player::shoot(sf::Sound& playerShootingSound, bool playerShootingSoundLoaded, sf::Vector2f mousePos){
+void Player::shoot(sf::Sound& shootingSound, bool shootingSoundLoaded, sf::Vector2f mousePos){
     if (ammunition > 0) {
-        if (playerShootingSoundLoaded) {
-            playerShootingSound.play();
+        if (shootingSoundLoaded) {
+            shootingSound.play();
         }
         sf::Vector2f playerPos = getPosition();
-        bullets.push_back(new Bullet(playerPos, mousePos));
+        bullets.push_back(std::make_shared<Bullet>(playerPos, mousePos));
         ammunition--;
     }
-}
-
-void Player::deleteBullets(){
-    for (Bullet* bullet : bullets) {
-        delete bullet;
-    }
-    bullets.clear();
 }
 
 int Player::getHealth(){

@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "SFML/Audio.hpp"
 #include "bullet.h"
+#include <memory>
 
 class Player {
 private:
@@ -13,7 +14,7 @@ private:
     int speed;
     sf::Sprite body;
     sf::Texture texture;
-    std::vector<Bullet*> bullets;
+    std::vector<std::shared_ptr<Bullet>> bullets;
     int kills;
 
 public:
@@ -26,8 +27,7 @@ public:
     void setBodyTexture(sf::Texture& texture);
     void rotateTowardsMouse(sf::RenderWindow& window);
     void checkWallCollision(float deltaTime, const sf::Vector2u& windowSize);
-    void shoot(sf::Sound& playerShootingSound, bool playerShootingSoundLoaded, sf::Vector2f mousePos);
-    void deleteBullets();
+    void shoot(sf::Sound& shootingSound, bool shootingSoundLoaded, sf::Vector2f mousePos);
     int getHealth();
     int getAmmunition();
     int getKills();

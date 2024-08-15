@@ -5,6 +5,7 @@
 #include "SFML/Audio.hpp"
 #include "bullet.h"
 #include <vector>
+#include <memory>
 
 class Enemy {
 private:
