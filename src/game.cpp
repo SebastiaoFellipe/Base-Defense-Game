@@ -210,6 +210,7 @@ void Game::checkCollisions() {
                 bulletIt = playerBullets.erase(bulletIt);
                 enemyBullets.clear();
                 enemyIt = enemies.erase(enemyIt);
+                player.incrementKills();
                 break;
             } else {
                 bulletIt++;

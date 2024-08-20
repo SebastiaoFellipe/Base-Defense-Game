@@ -132,3 +132,7 @@ void Player::takeDamage(int damage){
         health = 0;
     }
 }
+
+void Player::incrementKills(){
+    kills++;
+}
