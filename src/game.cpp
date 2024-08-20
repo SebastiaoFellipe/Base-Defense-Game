@@ -218,9 +218,11 @@ void Game::checkCollisions() {
             if (Collision::checkBulletHitPlayer(*bulletIt, player)) {
                 std::cout << "colisão: inimigo atirou no player" << std::endl;
                 bulletIt = enemyBullets.erase(bulletIt);
+                player.takeDamage(3);
             } else if (Collision::checkBulletHitBase(*bulletIt, base)) {
                 std::cout << "colisão: inimigo atirou na base" << std::endl;
                 bulletIt = enemyBullets.erase(bulletIt);
+                base.takeDamage(3);
             } else {
                 bulletIt++;
             }
@@ -229,12 +231,14 @@ void Game::checkCollisions() {
         if (Collision::checkEnemyHitPlayer(**enemyIt, player)) {
             std::cout << "colisão: inimigo e player" << std::endl;
             enemyIt = enemies.erase(enemyIt);
+            player.takeDamage(5);
             continue;
         }
         // verifica colisão entre o inimigo atual e a base
         if (Collision::checkEnemyHitBase(**enemyIt, base)) {
             std::cout << "colisão: inimigo e base" << std::endl;
             enemyIt = enemies.erase(enemyIt);
+            base.takeDamage(5);
             continue;
         }
         enemyIt++;

@@ -25,3 +25,10 @@ int Base::getHealth(){
 sf::FloatRect Base::getBody(){
     return body.getGlobalBounds();
 }
+
+void Base::takeDamage(int damage){
+    health = health-damage;
+    if (health<0){
+        health = 0;
+    }
+}

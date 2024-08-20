@@ -125,3 +125,10 @@ sf::FloatRect Player::getBody(){
 std::vector<std::shared_ptr<Bullet>>& Player::getBullets(){
     return bullets;
 }
+
+void Player::takeDamage(int damage){
+    health = health-damage;
+    if (health<0){
+        health = 0;
+    }
+}

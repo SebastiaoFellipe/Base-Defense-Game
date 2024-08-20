@@ -33,6 +33,7 @@ public:
     int getKills();
     sf::FloatRect getBody();
     std::vector<std::shared_ptr<Bullet>>& getBullets();
+    void takeDamage(int damage);
 };
 
 #endif // PLAYER_H

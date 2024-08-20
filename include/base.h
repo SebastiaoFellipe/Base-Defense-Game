@@ -15,6 +15,7 @@ public:
     void setPositionCenter(sf::RenderWindow& window);
     int getHealth();
     sf::FloatRect getBody();
+    void takeDamage(int damage);
 };
 
 #endif // BASE_H
