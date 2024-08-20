@@ -16,6 +16,7 @@ public:
     int getHealth();
     sf::FloatRect getBody();
     void takeDamage(int damage);
+    void regeneration();
 };
 
 #endif // BASE_H

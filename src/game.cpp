@@ -81,6 +81,10 @@ void Game::update(float deltaTime, int elapsedSeconds) {
     for (auto enemy : enemies){
         enemy->update(deltaTime, elapsedSeconds, onPause, shootingSound, shootingSoundLoaded, player.getPosition());
     }
+    if (regenClock.getElapsedTime().asSeconds() >= 1.0f) {
+        base.regeneration();
+        regenClock.restart();
+    }
     interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
 }
 
