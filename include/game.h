@@ -43,6 +43,7 @@ private:
     void closeGame();
     void pause();
     void createEnemies(int elapsedSeconds, int interval, sf::RenderWindow& window);
+    void checkCollisions();
 
 public:
     Game();

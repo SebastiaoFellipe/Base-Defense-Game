@@ -2,6 +2,7 @@
 #include "player.h"
 #include "bullet.h"
 #include "interface.h"
+#include "collision.h"
 #include <iostream>
 #include <cmath>
 #include <chrono>
@@ -79,6 +80,7 @@ void Game::update(float deltaTime, int elapsedSeconds) {
     for (auto enemy : enemies){
         enemy->update(deltaTime, elapsedSeconds, onPause, shootingSound, shootingSoundLoaded, player.getPosition());
     }
+    checkCollisions();
     interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
 }
 
@@ -187,6 +189,31 @@ void Game::createEnemies(int elapsedSeconds, int interval, sf::RenderWindow& win
             }
             default:
                 break;
+        }
+    }
+}
+
+void Game::checkCollisions(){
+    for (auto& enemy : enemies) {
+        for (auto& bullet : player.getBullets()) {
+            if (Collision::checkPlayerBulletHitEnemy(bullet, *enemy)) {
+                std::cout << "colidiu player atirou no inimigo" << std::endl;
+            }
+        }
+        for (auto& bullet : enemy->getBullets()) {
+            if (Collision::checkBulletHitPlayer(bullet, player)) {
+                std::cout << "colidiu inimigo atirou no player" << std::endl;
+
+            }
+            if (Collision::checkBulletHitBase(bullet, base)) {
+                std::cout << "colidiu inimigo atirou na base" << std::endl;
+            }
+        }
+        if (Collision::checkEnemyHitPlayer(*enemy, player)) {
+            std::cout << "colidiu inimigo e player" << std::endl;
+        }
+        if (Collision::checkEnemyHitBase(*enemy, base)) {
+            std::cout << "colidiu inimigo e base" << std::endl;
         }
     }
 }
