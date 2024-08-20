@@ -57,3 +57,11 @@ void Enemy::shoot(sf::Sound& shootingSound, bool shootingSoundLoaded, sf::Vector
     sf::Vector2f enemyPos = body.getPosition();
     bullets.push_back(std::make_shared<Bullet>(enemyPos, playerPos));
 }
+
+sf::FloatRect Enemy::getBody(){
+    return body.getGlobalBounds();
+}
+
+std::vector<std::shared_ptr<Bullet>>& Enemy::getBullets(){
+    return bullets;
+}

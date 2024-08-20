@@ -31,6 +31,8 @@ public:
     int getHealth();
     int getAmmunition();
     int getKills();
+    sf::FloatRect getBody();
+    std::vector<std::shared_ptr<Bullet>>& getBullets();
 };
 
 #endif // PLAYER_H

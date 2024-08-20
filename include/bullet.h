@@ -17,6 +17,7 @@ public:
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
     bool checkBulletDistanceLimit();
+    sf::FloatRect getBody();
 };
 
 #endif // BULLET_H

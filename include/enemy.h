@@ -23,7 +23,8 @@ public:
     void updatePosition(float deltaTime, sf::Vector2f playerPosition);
     void setPosition(sf::Vector2f position);
     void shoot(sf::Sound& shootingSound, bool shootingSoundLoaded, sf::Vector2f playerPos);
-
+    sf::FloatRect getBody();
+    std::vector<std::shared_ptr<Bullet>>& getBullets();
 };
 
 #endif // ENEMY_H

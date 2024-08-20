@@ -6,7 +6,7 @@
 class Base {
 private:
     int health;
-    sf::RectangleShape shape;
+    sf::RectangleShape body;
     sf::Vector2f position;
 
 public:
@@ -14,6 +14,7 @@ public:
     void draw(sf::RenderWindow& window);
     void setPositionCenter(sf::RenderWindow& window);
     int getHealth();
+    sf::FloatRect getBody();
 };
 
 #endif // BASE_H

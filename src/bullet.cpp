@@ -26,3 +26,7 @@ bool Bullet::checkBulletDistanceLimit() {
     float distanceFromStart = std::sqrt(std::pow(body.getPosition().x - startPosition.x, 2)+std::pow(body.getPosition().y-startPosition.y, 2));
     return distanceFromStart >= maxDistance;
 }
+
+sf::FloatRect Bullet::getBody(){
+    return body.getGlobalBounds();
+}

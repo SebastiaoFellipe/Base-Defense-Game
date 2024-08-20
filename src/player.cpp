@@ -117,3 +117,11 @@ int Player::getAmmunition(){
 int Player::getKills(){
     return kills;
 }
+
+sf::FloatRect Player::getBody(){
+    return body.getGlobalBounds();
+}
+
+std::vector<std::shared_ptr<Bullet>>& Player::getBullets(){
+    return bullets;
+}
