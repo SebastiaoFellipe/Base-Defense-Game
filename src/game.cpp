@@ -75,12 +75,12 @@ void Game::processEvents() {
 
 // função para atualizar a janela do jogo
 void Game::update(float deltaTime, int elapsedSeconds) {
+    checkCollisions();
     player.update(deltaTime, onPause, window);
     createEnemies(elapsedSeconds, 5, window);
     for (auto enemy : enemies){
         enemy->update(deltaTime, elapsedSeconds, onPause, shootingSound, shootingSoundLoaded, player.getPosition());
     }
-    checkCollisions();
     interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
 }
 
@@ -193,27 +193,50 @@ void Game::createEnemies(int elapsedSeconds, int interval, sf::RenderWindow& win
     }
 }
 
-void Game::checkCollisions(){
-    for (auto& enemy : enemies) {
-        for (auto& bullet : player.getBullets()) {
-            if (Collision::checkPlayerBulletHitEnemy(bullet, *enemy)) {
-                std::cout << "colidiu player atirou no inimigo" << std::endl;
+void Game::checkCollisions() {
+    // referência ao vetor de balas do jogador
+    auto& playerBullets = player.getBullets();
+    for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); ) {
+        // referência ao vetor de balas do inimigo atual
+        auto& enemyBullets = (*enemyIt)->getBullets();
+        // verifica colisão entre as balas do player com o inimigo atual
+        for (auto bulletIt = playerBullets.begin(); bulletIt != playerBullets.end(); ) {
+            if (Collision::checkPlayerBulletHitEnemy(*bulletIt, **enemyIt)) {
+                std::cout << "colisão: player atirou no inimigo" << std::endl;
+                bulletIt = playerBullets.erase(bulletIt);
+                enemyBullets.clear();
+                enemyIt = enemies.erase(enemyIt);
+                break;
+            } else {
+                bulletIt++;
             }
         }
-        for (auto& bullet : enemy->getBullets()) {
-            if (Collision::checkBulletHitPlayer(bullet, player)) {
-                std::cout << "colidiu inimigo atirou no player" << std::endl;
-
+        // se o inimigo atual foi removido continua para o próximo
+        if (enemyIt == enemies.end()) continue;
+        // verifica colisão entre a bala do inimigo atual com o player ou a base
+        for (auto bulletIt = enemyBullets.begin(); bulletIt != enemyBullets.end(); ) {
+            if (Collision::checkBulletHitPlayer(*bulletIt, player)) {
+                std::cout << "colisão: inimigo atirou no player" << std::endl;
+                bulletIt = enemyBullets.erase(bulletIt);
+            } else if (Collision::checkBulletHitBase(*bulletIt, base)) {
+                std::cout << "colisão: inimigo atirou na base" << std::endl;
+                bulletIt = enemyBullets.erase(bulletIt);
+            } else {
+                bulletIt++;
             }
-            if (Collision::checkBulletHitBase(bullet, base)) {
-                std::cout << "colidiu inimigo atirou na base" << std::endl;
-            }
         }
-        if (Collision::checkEnemyHitPlayer(*enemy, player)) {
-            std::cout << "colidiu inimigo e player" << std::endl;
+        // verifica colisão entre o inimigo atual e o player
+        if (Collision::checkEnemyHitPlayer(**enemyIt, player)) {
+            std::cout << "colisão: inimigo e player" << std::endl;
+            enemyIt = enemies.erase(enemyIt);
+            continue;
         }
-        if (Collision::checkEnemyHitBase(*enemy, base)) {
-            std::cout << "colidiu inimigo e base" << std::endl;
+        // verifica colisão entre o inimigo atual e a base
+        if (Collision::checkEnemyHitBase(**enemyIt, base)) {
+            std::cout << "colisão: inimigo e base" << std::endl;
+            enemyIt = enemies.erase(enemyIt);
+            continue;
         }
+        enemyIt++;
     }
 }
