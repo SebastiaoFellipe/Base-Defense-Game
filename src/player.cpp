@@ -136,3 +136,7 @@ void Player::takeDamage(int damage){
 void Player::incrementKills(){
     kills++;
 }
+
+void Player::addAmmunition(int ammunition){
+    this->ammunition += ammunition;
+}

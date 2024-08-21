@@ -36,6 +36,13 @@ void Game::initialize() {
         shootingSound.setBuffer(shootingBuffer);
         shootingSound.setVolume(20.0f);
     }
+    if (!getLootBuffer.loadFromFile("assets/sounds/ammunition_box.wav")) {
+        std::cerr << "Erro ao carregar o som de pegar munição. Efeito desabilitado." << std::endl;
+        getLootSoundLoaded = false;
+    } else {
+        getLootSound.setBuffer(getLootBuffer);
+        getLootSound.setVolume(20.0f);
+    }
     if (!backgroundMusic.openFromFile("assets/sounds/8-Bit-Hideout!-Dark-Chiptune-Game-Music-By-HeatleyBros.wav")) {
         std::cerr << "Erro ao carregar a música de fundo." << std::endl;
         backgroundMusicLoaded = false;
@@ -252,6 +259,15 @@ void Game::checkCollisions() {
             continue;
         }
         enemyIt++;
+    }
+    for (auto loot = loots.begin(); loot != loots.end(); ) {
+        if (Collision::checkPlayerGetsLoot(player, **loot)) {
+            player.addAmmunition(10);
+            getLootSound.play();
+            loot = loots.erase(loot);
+        } else {
+            loot++;
+        }
     }
 }
 

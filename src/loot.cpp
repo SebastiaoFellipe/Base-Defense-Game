@@ -23,3 +23,7 @@ sf::Vector2f Loot::getPosition(){
 sf::Clock Loot::getTimer(){
     return timer;
 }
+
+sf::FloatRect Loot::getBody(){
+    return body.getGlobalBounds();
+}

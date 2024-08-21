@@ -22,6 +22,9 @@ private:
     sf::SoundBuffer shootingBuffer;
     sf::Sound shootingSound;
     bool shootingSoundLoaded = true;
+    sf::SoundBuffer getLootBuffer;
+    sf::Sound getLootSound;
+    bool getLootSoundLoaded = true;
     sf::Music backgroundMusic;
     bool backgroundMusicLoaded = true;
     bool onPause = false;

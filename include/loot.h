@@ -15,6 +15,7 @@ public:
     bool isExpired();
     sf::Vector2f getPosition();
     sf::Clock getTimer();
+    sf::FloatRect getBody();
 };
 
 #endif // LOOT_H

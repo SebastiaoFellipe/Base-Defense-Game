@@ -19,3 +19,7 @@ bool Collision::checkEnemyHitBase(Enemy& enemy, Base& base) {
 bool Collision::checkPlayerBulletHitEnemy(std::shared_ptr<Bullet>& bullet, Enemy& enemy) {
     return bullet->getBody().intersects(enemy.getBody());
 }
+
+bool Collision::checkPlayerGetsLoot(Player& player, Loot& loot) {
+    return player.getBody().intersects(loot.getBody());
+}

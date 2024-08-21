@@ -35,6 +35,7 @@ public:
     std::vector<std::shared_ptr<Bullet>>& getBullets();
     void takeDamage(int damage);
     void incrementKills();
+    void addAmmunition(int ammunition);
 };
 
 #endif // PLAYER_H
