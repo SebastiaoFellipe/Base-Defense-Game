@@ -85,6 +85,7 @@ void Game::update(float deltaTime, int elapsedSeconds) {
         base.regeneration();
         regenClock.restart();
     }
+    lootUpdate();
     interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
 }
 
@@ -97,6 +98,9 @@ void Game::render() {
     interface->draw(window);
     for (auto enemy : enemies){
         enemy->draw(window);
+    }
+    for (auto loot : loots){
+        loot->draw(window);
     }
 
     window.display();
@@ -208,6 +212,7 @@ void Game::checkCollisions() {
             if (Collision::checkPlayerBulletHitEnemy(*bulletIt, **enemyIt)) {
                 std::cout << "colisão: player atirou no inimigo" << std::endl;
                 bulletIt = playerBullets.erase(bulletIt);
+                dropLoot((*enemyIt)->getPosition());
                 enemyBullets.clear();
                 enemyIt = enemies.erase(enemyIt);
                 player.incrementKills();
@@ -247,5 +252,24 @@ void Game::checkCollisions() {
             continue;
         }
         enemyIt++;
+    }
+}
+
+void Game::dropLoot(sf::Vector2f position) {
+    // 50% de chance de dropar loot
+    if (rand()%2 == 0) {
+        std::cout << "inimigo dropou loot" << std::endl;
+        loots.push_back(std::make_shared<Loot>(position));
+    }
+}
+
+void Game::lootUpdate(){
+    for (auto loot = loots.begin(); loot != loots.end(); ) {
+        if ((*loot)->getTimer().getElapsedTime().asSeconds() > 10.0f) {
+            std::cout << "loot expirou" << std::endl;
+            loot = loots.erase(loot);
+        } else {
+            loot++;
+        }
     }
 }

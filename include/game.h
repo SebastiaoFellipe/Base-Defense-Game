@@ -10,6 +10,7 @@
 #include "bullet.h"
 #include "interface.h"
 #include "enemy.h"
+#include "loot.h"
 #include <memory>
 
 class Game {
@@ -34,6 +35,7 @@ private:
     Base base;
     Player player;
     std::vector<std::shared_ptr<Enemy>> enemies;
+    std::vector<std::shared_ptr<Loot>> loots;
     std::unique_ptr<Interface> interface;
 
     void processEvents();
@@ -45,6 +47,8 @@ private:
     void pause();
     void createEnemies(int elapsedSeconds, int interval, sf::RenderWindow& window);
     void checkCollisions();
+    void dropLoot(sf::Vector2f position);
+    void lootUpdate();
 
 public:
     Game();

@@ -65,3 +65,7 @@ sf::FloatRect Enemy::getBody(){
 std::vector<std::shared_ptr<Bullet>>& Enemy::getBullets(){
     return bullets;
 }
+
+sf::Vector2f Enemy::getPosition(){
+    return body.getPosition();
+}

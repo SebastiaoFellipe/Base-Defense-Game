@@ -25,6 +25,7 @@ public:
     void shoot(sf::Sound& shootingSound, bool shootingSoundLoaded, sf::Vector2f playerPos);
     sf::FloatRect getBody();
     std::vector<std::shared_ptr<Bullet>>& getBullets();
+    sf::Vector2f getPosition();
 };
 
 #endif // ENEMY_H
