@@ -10,40 +10,38 @@ Interface::Interface(sf::RenderWindow& window) {
     int fontSize = 20;
     float sideMargin = window.getSize().x-200.0f;
     
-    baseHealthText.setFont(font);
-    baseHealthText.setCharacterSize(fontSize);
-    baseHealthText.setFillColor(sf::Color::Black);
+    configText(baseHealthText, font, "", fontSize);
     baseHealthText.setPosition(sideMargin,fontSize*1.0f);
 
-    playerHealthText.setFont(font);
-    playerHealthText.setCharacterSize(fontSize);
-    playerHealthText.setFillColor(sf::Color::Black);
+    configText(playerHealthText, font, "", fontSize);
     playerHealthText.setPosition(sideMargin,fontSize*2.2f);
 
-    ammunitionText.setFont(font);
-    ammunitionText.setCharacterSize(fontSize);
-    ammunitionText.setFillColor(sf::Color::Black);
+    configText(ammunitionText, font, "", fontSize);
     ammunitionText.setPosition(sideMargin,fontSize*3.4f);
     
-    killsText.setFont(font);
-    killsText.setCharacterSize(fontSize);
-    killsText.setFillColor(sf::Color::Black);
+    configText(killsText, font, "", fontSize);
     killsText.setPosition(sideMargin,fontSize*4.6f);
 
-    pauseText.setFont(font);
-    pauseText.setCharacterSize(46);
-    pauseText.setFillColor(sf::Color::Black);
-    pauseText.setString("PAUSE");
+    configText(pauseText, font, "PAUSE", 46);
     pauseText.setStyle(sf::Text::Bold);
     pauseText.setOrigin(pauseText.getGlobalBounds().width/2,0.0f);
     pauseText.setPosition((window.getSize().x/2.0f), 50.0f);
 
-    timerText.setFont(font);
-    timerText.setCharacterSize(fontSize);
-    timerText.setFillColor(sf::Color::Black);
-    timerText.setString("TEMPO: 01:20");
+    configText(timerText, font, "TEMPO: 01:20", fontSize);
     timerText.setOrigin(timerText.getGlobalBounds().width/2,0.0f);
     timerText.setPosition((window.getSize().x/2.0f), 20.0f);
+
+    configText(exitText, font, "Pressione \"esc\" para sair", 16);
+    exitText.setStyle(sf::Text::Bold);
+    exitText.setOrigin(exitText.getGlobalBounds().width/2, exitText.getGlobalBounds().height/2);
+    exitText.setPosition(window.getSize().x/2.0f, window.getSize().y - 30.0f);
+}
+
+void Interface::configText(sf::Text& text, sf::Font& font, std::string str, int size) {
+    text.setFont(font);
+    text.setCharacterSize(size);
+    text.setString(str);
+    text.setFillColor(sf::Color::Black);
 }
 
 void Interface::update(int baseHealth, int playerHealth, int ammunition, int kills, int elapsedSeconds){
