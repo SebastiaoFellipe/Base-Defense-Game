@@ -85,7 +85,7 @@ void Game::processEvents(bool endGame) {
 void Game::update(float deltaTime, int elapsedSeconds) {
     checkCollisions();
     player.update(deltaTime, onPause, window);
-    createEnemies(elapsedSeconds, 5, window);
+    createEnemies(elapsedSeconds, window);
     for (auto enemy : enemies){
         enemy->update(deltaTime, elapsedSeconds, onPause, shootingSound, shootingSoundLoaded, player.getPosition());
     }
@@ -179,9 +179,19 @@ void Game::pause(){
     }
 }
 
-void Game::createEnemies(int elapsedSeconds, int interval, sf::RenderWindow& window){
-    if (enemies.empty()){  
+void Game::createEnemies(int elapsedSeconds, sf::RenderWindow& window){
+    if (enemies.empty() && elapsedSeconds==0.0f){  
         enemies.push_back(std::make_shared<Enemy>());
+    }
+    int interval;
+    if (elapsedSeconds <= 20){
+        interval = 4;
+    } else if (elapsedSeconds <= 40){
+        interval = 3;
+    } else if (elapsedSeconds <= 60){
+        interval = 2;
+    } else {
+        interval = 1;
     }
     if (elapsedSeconds-lastEnemySpawnTime >= interval) {
         enemies.push_back(std::make_shared<Enemy>());

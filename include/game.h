@@ -50,7 +50,7 @@ private:
     sf::Vector2f getMouseClickPosition();
     void closeGame();
     void pause();
-    void createEnemies(int elapsedSeconds, int interval, sf::RenderWindow& window);
+    void createEnemies(int elapsedSeconds, sf::RenderWindow& window);
     void checkCollisions();
     void dropLoot(sf::Vector2f position);
     void lootUpdate();
