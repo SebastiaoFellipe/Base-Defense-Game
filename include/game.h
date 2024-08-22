@@ -21,19 +21,21 @@ private:
     sf::Text text;
     sf::SoundBuffer shootingBuffer;
     sf::Sound shootingSound;
-    bool shootingSoundLoaded = true;
+    bool shootingSoundLoaded;
     sf::SoundBuffer getLootBuffer;
     sf::Sound getLootSound;
-    bool getLootSoundLoaded = true;
+    bool getLootSoundLoaded;
     sf::Music backgroundMusic;
-    bool backgroundMusicLoaded = true;
-    bool onPause = false;
+    bool backgroundMusicLoaded;
+    bool onPause;
     int elapsedSeconds;
+    int totalTimeInSeconds = 81;
     std::chrono::steady_clock::time_point startTime;
     std::chrono::steady_clock::time_point pauseStartTime;
-    std::chrono::seconds totalPausedTime{0};
-    int lastEnemySpawnTime = 0;
+    std::chrono::seconds totalPausedTime;
+    int lastEnemySpawnTime;
     sf::Clock regenClock;
+    bool endGame;
 
     Base base;
     Player player;
@@ -41,7 +43,7 @@ private:
     std::vector<std::shared_ptr<Loot>> loots;
     std::unique_ptr<Interface> interface;
 
-    void processEvents();
+    void processEvents(bool endGame);
     void update(float deltaTime, int elapsedSeconds);
     void render();
     void initialize();
@@ -52,6 +54,8 @@ private:
     void checkCollisions();
     void dropLoot(sf::Vector2f position);
     void lootUpdate();
+    void renderVictoryScreen(int playerKills);
+    void renderDefeatScreen(int playerkills);
 
 public:
     Game();

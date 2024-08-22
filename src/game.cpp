@@ -8,7 +8,7 @@
 #include <chrono>
 #include <memory>
 
-Game::Game() {
+Game::Game():shootingSoundLoaded(true), getLootSoundLoaded(true), backgroundMusicLoaded(true), onPause(false), elapsedSeconds(0), totalPausedTime(0), lastEnemySpawnTime(0), endGame(false) {
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
     // calcula a largura e altura da janela de modo que tenha 90% da largura do monitor sendo o máximo 1600:900
     float width = desktop.width * 0.9f;
@@ -54,7 +54,7 @@ void Game::initialize() {
 }
 
 // função para processar os eventos na janela do jogo
-void Game::processEvents() {
+void Game::processEvents(bool endGame) {
     sf::Event event;
     while (window.pollEvent(event)) {
         switch (event.type){
@@ -65,12 +65,12 @@ void Game::processEvents() {
             if (event.key.code == sf::Keyboard::Escape){
                 closeGame();
             }
-            if (event.key.code == sf::Keyboard::P){
+            if (event.key.code == sf::Keyboard::P && !endGame){
                 pause();
             }
             break;
         case sf::Event::MouseButtonPressed:
-            if (!onPause && event.mouseButton.button == sf::Mouse::Left) {
+            if (!onPause && event.mouseButton.button == sf::Mouse::Left && !endGame) {
                 player.shoot(shootingSound, shootingSoundLoaded, getMouseClickPosition());
             }
             break;
@@ -102,13 +102,13 @@ void Game::render() {
 
     base.draw(window);
     player.draw(window);
-    interface->draw(window);
     for (auto enemy : enemies){
         enemy->draw(window);
     }
     for (auto loot : loots){
         loot->draw(window);
     }
+    interface->draw(window);
 
     window.display();
 }
@@ -121,18 +121,24 @@ void Game::run() {
     while (window.isOpen()) {
         sf::Time deltaTime = deltaTimeClock.restart();
         float deltaTimeSeconds = deltaTime.asSeconds();
-        int totalTimeInSeconds = 81;
-        processEvents();
+        processEvents(endGame);
         if (!onPause) {
             auto now = std::chrono::steady_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - startTime) - totalPausedTime;
             elapsedSeconds = static_cast<int>(elapsed.count());
             if (elapsedSeconds < totalTimeInSeconds) {
-                update(deltaTimeSeconds, elapsedSeconds);
-                render();
-            } else {
-                std::cout << "Acabou o tempo." << std::endl;
-                break;
+                if (base.getHealth() == 0 || player.getHealth() == 0) {
+                    endGame = true;
+                    backgroundMusic.pause();
+                    renderDefeatScreen(player.getKills());
+                } else {
+                    update(deltaTimeSeconds, elapsedSeconds);
+                    render();
+                }
+            } else if (!endGame){
+                endGame = true;
+                backgroundMusic.pause();
+                renderVictoryScreen(player.getKills());
             }
         }
     }
@@ -148,6 +154,7 @@ sf::Vector2f Game::getMouseClickPosition() {
 
 void Game::closeGame(){
     enemies.clear();
+    loots.clear();
     window.close();
 }
 
@@ -217,7 +224,6 @@ void Game::checkCollisions() {
         // verifica colisão entre as balas do player com o inimigo atual
         for (auto bulletIt = playerBullets.begin(); bulletIt != playerBullets.end(); ) {
             if (Collision::checkPlayerBulletHitEnemy(*bulletIt, **enemyIt)) {
-                std::cout << "colisão: player atirou no inimigo" << std::endl;
                 bulletIt = playerBullets.erase(bulletIt);
                 dropLoot((*enemyIt)->getPosition());
                 enemyBullets.clear();
@@ -233,11 +239,9 @@ void Game::checkCollisions() {
         // verifica colisão entre a bala do inimigo atual com o player ou a base
         for (auto bulletIt = enemyBullets.begin(); bulletIt != enemyBullets.end(); ) {
             if (Collision::checkBulletHitPlayer(*bulletIt, player)) {
-                std::cout << "colisão: inimigo atirou no player" << std::endl;
                 bulletIt = enemyBullets.erase(bulletIt);
                 player.takeDamage(3);
             } else if (Collision::checkBulletHitBase(*bulletIt, base)) {
-                std::cout << "colisão: inimigo atirou na base" << std::endl;
                 bulletIt = enemyBullets.erase(bulletIt);
                 base.takeDamage(3);
             } else {
@@ -246,14 +250,12 @@ void Game::checkCollisions() {
         }
         // verifica colisão entre o inimigo atual e o player
         if (Collision::checkEnemyHitPlayer(**enemyIt, player)) {
-            std::cout << "colisão: inimigo e player" << std::endl;
             enemyIt = enemies.erase(enemyIt);
             player.takeDamage(5);
             continue;
         }
         // verifica colisão entre o inimigo atual e a base
         if (Collision::checkEnemyHitBase(**enemyIt, base)) {
-            std::cout << "colisão: inimigo e base" << std::endl;
             enemyIt = enemies.erase(enemyIt);
             base.takeDamage(5);
             continue;
@@ -274,7 +276,6 @@ void Game::checkCollisions() {
 void Game::dropLoot(sf::Vector2f position) {
     // 50% de chance de dropar loot
     if (rand()%2 == 0) {
-        std::cout << "inimigo dropou loot" << std::endl;
         loots.push_back(std::make_shared<Loot>(position));
     }
 }
@@ -282,10 +283,19 @@ void Game::dropLoot(sf::Vector2f position) {
 void Game::lootUpdate(){
     for (auto loot = loots.begin(); loot != loots.end(); ) {
         if ((*loot)->getTimer().getElapsedTime().asSeconds() > 10.0f) {
-            std::cout << "loot expirou" << std::endl;
             loot = loots.erase(loot);
         } else {
             loot++;
         }
     }
+}
+
+void Game::renderVictoryScreen(int playerKills){
+    window.clear(sf::Color(221,221,221));
+    interface->drawVictoryScreen(window, playerKills);
+}
+
+void Game::renderDefeatScreen(int playerKills){
+    window.clear(sf::Color(221,221,221));
+    interface->drawDefeatScreen(window, playerKills);
 }
