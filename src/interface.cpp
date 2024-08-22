@@ -70,3 +70,53 @@ void Interface::drawPauseScreen(sf::RenderWindow& window) {
     window.draw(pauseText);
     window.display();
 }
+
+void Interface::drawVictoryScreen(sf::RenderWindow& window, int playerKills){
+    configText(endScreenText, font, "Parabens!", 46);
+    endScreenText.setStyle(sf::Text::Bold);
+    endScreenText.setOrigin(endScreenText.getGlobalBounds().width/2, endScreenText.getGlobalBounds().height/2);
+    endScreenText.setPosition(window.getSize().x/2.0f, window.getSize().y/2.0f - 90.0f);
+
+    configText(endScreenPhraseText, font, "Voce protegeu a base dentro do tempo!", 32);
+    endScreenPhraseText.setStyle(sf::Text::Bold);
+    endScreenPhraseText.setOrigin(endScreenPhraseText.getGlobalBounds().width/2, endScreenPhraseText.getGlobalBounds().height/2);
+    endScreenPhraseText.setPosition(window.getSize().x/2.0f, window.getSize().y/2.0f - 30.0f);
+
+    configText(endScreenKillsText, font, "", 32);
+    endScreenKillsText.setStyle(sf::Text::Bold);
+    endScreenKillsText.setPosition(window.getSize().x/2.0f, window.getSize().y/2.0f + 16.0f);
+
+    endScreenKillsText.setString("Kills: " + std::to_string(playerKills));
+    endScreenKillsText.setOrigin(endScreenKillsText.getGlobalBounds().width/2, endScreenKillsText.getGlobalBounds().height/2);
+
+    window.draw(endScreenText);
+    window.draw(endScreenPhraseText);
+    window.draw(endScreenKillsText);
+    window.draw(exitText);
+    window.display();
+}
+
+void Interface::drawDefeatScreen(sf::RenderWindow& window, int playerKills){
+    configText(endScreenText, font, "Derrota!", 46);
+    endScreenText.setStyle(sf::Text::Bold);
+    endScreenText.setOrigin(endScreenText.getGlobalBounds().width/2, endScreenText.getGlobalBounds().height/2);
+    endScreenText.setPosition(window.getSize().x/2.0f, window.getSize().y/2.0f - 90.0f);
+
+    configText(endScreenPhraseText, font, "mais sorte na proxima!", 32);
+    endScreenPhraseText.setStyle(sf::Text::Bold);
+    endScreenPhraseText.setOrigin(endScreenPhraseText.getGlobalBounds().width/2, endScreenPhraseText.getGlobalBounds().height/2);
+    endScreenPhraseText.setPosition(window.getSize().x/2.0f, window.getSize().y/2.0f - 30.0f);
+
+    configText(endScreenKillsText, font, "", 32);
+    endScreenKillsText.setStyle(sf::Text::Bold);
+    endScreenKillsText.setPosition(window.getSize().x/2.0f, window.getSize().y/2.0f + 16.0f);
+
+    endScreenKillsText.setString("Kills: " + std::to_string(playerKills));
+    endScreenKillsText.setOrigin(endScreenKillsText.getGlobalBounds().width/2, endScreenKillsText.getGlobalBounds().height/2);
+
+    window.draw(endScreenText);
+    window.draw(endScreenPhraseText);
+    window.draw(endScreenKillsText);
+    window.draw(exitText);
+    window.display();
+}
