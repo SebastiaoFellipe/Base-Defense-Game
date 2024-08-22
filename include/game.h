@@ -34,7 +34,7 @@ private:
     std::chrono::steady_clock::time_point pauseStartTime;
     std::chrono::seconds totalPausedTime;
     int lastEnemySpawnTime;
-    sf::Clock regenClock;
+    std::chrono::steady_clock::time_point regenStartTime;
     bool endGame;
 
     Base base;

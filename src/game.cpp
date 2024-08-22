@@ -17,6 +17,7 @@ Game::Game():shootingSoundLoaded(true), getLootSoundLoaded(true), backgroundMusi
     window.create(sf::VideoMode(width, height), "Base Defense Game");
     interface = std::make_unique<Interface>(window);
     startTime = std::chrono::steady_clock::now();
+    regenStartTime = std::chrono::steady_clock::now();
     initialize();
 }
 
@@ -88,9 +89,11 @@ void Game::update(float deltaTime, int elapsedSeconds) {
     for (auto enemy : enemies){
         enemy->update(deltaTime, elapsedSeconds, onPause, shootingSound, shootingSoundLoaded, player.getPosition());
     }
-    if (regenClock.getElapsedTime().asSeconds() >= 1.0f) {
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - regenStartTime);
+    if (elapsed.count() >= 1) {
         base.regeneration();
-        regenClock.restart();
+        regenStartTime = now;
     }
     lootUpdate();
     interface->update(base.getHealth(), player.getHealth(), player.getAmmunition(), player.getKills(), elapsedSeconds);
@@ -102,11 +105,11 @@ void Game::render() {
 
     base.draw(window);
     player.draw(window);
-    for (auto enemy : enemies){
-        enemy->draw(window);
-    }
     for (auto loot : loots){
         loot->draw(window);
+    }
+    for (auto enemy : enemies){
+        enemy->draw(window);
     }
     interface->draw(window);
 
@@ -116,14 +119,15 @@ void Game::render() {
 // função para rodar o jogo
 void Game::run() {
     std::cout << "Iniciando Base Defense Game!" << std::endl;
-    sf::Clock deltaTimeClock;
+    auto lastTime = std::chrono::steady_clock::now();
     
     while (window.isOpen()) {
-        sf::Time deltaTime = deltaTimeClock.restart();
-        float deltaTimeSeconds = deltaTime.asSeconds();
+        auto now = std::chrono::steady_clock::now();
+        std::chrono::duration<float> elapsedTime = now - lastTime;
+        lastTime = now;
+        float deltaTimeSeconds = elapsedTime.count();
         processEvents(endGame);
         if (!onPause) {
-            auto now = std::chrono::steady_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - startTime) - totalPausedTime;
             elapsedSeconds = static_cast<int>(elapsed.count());
             if (elapsedSeconds < totalTimeInSeconds) {
@@ -281,8 +285,10 @@ void Game::dropLoot(sf::Vector2f position) {
 }
 
 void Game::lootUpdate(){
+    auto now = std::chrono::steady_clock::now();
     for (auto loot = loots.begin(); loot != loots.end(); ) {
-        if ((*loot)->getTimer().getElapsedTime().asSeconds() > 10.0f) {
+        auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - (*loot)->getTimer()).count();
+        if (elapsed>10) {
             loot = loots.erase(loot);
         } else {
             loot++;
